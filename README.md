@@ -4,6 +4,12 @@
 
 This document outlines the four-step process for converting unstructured healthcare data into FHIR HL7 compliant JSON, leveraging Databricks, Spark, and Large Language Models (LLMs).
 
+## Description
+- Reads Unorganized Health Data: Our system takes messy healthcare information (like notes, scanned documents, old records).
+- AI Understands and Organizes: It uses smart computer programs (AI) to make sense of this data.
+- Converts to a Standard Format: It then transforms the data into FHIR HL7, a universal language for health information.
+- Enables Easy Use: This makes the data clean, organized, and ready for sharing, analysis, and building new healthcare tools.
+
 ---
 
 ## Step 1: Initial Information Extraction

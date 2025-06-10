@@ -77,8 +77,8 @@ class FHIRFly:
         self,
         spark: SparkSession,
         model_name: str = "databricks-llama-4-maverick",
-        fhir_resource_table: str = "workspace.default.fhir_resource_descriptions",
-        fhir_definitions_table: str = "workspace.default.fhir_definitions_table_2",
+        fhir_resource_csv: str = "tables/fhir_resource_descriptions.csv",
+        fhir_schemas_csv: str = "tables/fhir_schemas.csv",
         token_lifetime_seconds: int = 14400
     ):
         """
@@ -87,14 +87,14 @@ class FHIRFly:
         Args:
             spark: Active SparkSession
             model_name: Databricks LLM model name to use
-            fhir_resource_table: Delta table containing FHIR resource descriptions
-            fhir_definitions_table: Delta table containing FHIR JSON schemas
+            fhir_resource_csv: CSV file containing FHIR resource descriptions
+            fhir_schemas_csv: CSV file containing FHIR JSON schemas
             token_lifetime_seconds: Lifetime of the Databricks token in seconds
         """
         self.spark = spark
         self.model_name = model_name
-        self.fhir_resource_table = fhir_resource_table
-        self.fhir_definitions_table = fhir_definitions_table
+        self.fhir_resource_csv = fhir_resource_csv
+        self.fhir_schemas_csv = fhir_schemas_csv
         
         # Initialize Databricks client and LLM
         self.workspace_client = WorkspaceClient()
@@ -113,14 +113,14 @@ class FHIRFly:
         self._load_fhir_resources()
     
     def _load_fhir_resources(self) -> None:
-        """Load FHIR resource descriptions and schemas from Delta tables."""
+        """Load FHIR resource descriptions and schemas from CSV files."""
         try:
-            # Load FHIR resource descriptions
-            fhir_df = self.spark.read.format("delta").table(self.fhir_resource_table)
+            # Load FHIR resource descriptions from CSV
+            fhir_df = self.spark.read.csv(self.fhir_resource_csv, header=True)
             self.fhir_resource_descriptions = fhir_df.toPandas().to_dict(orient='records')
             
-            # Load FHIR schemas
-            self.schema_df = self.spark.read.format("delta").table(self.fhir_definitions_table).toPandas()
+            # Load FHIR schemas from CSV
+            self.schema_df = self.spark.read.csv(self.fhir_schemas_csv, header=True).toPandas()
         except Exception as e:
             raise RuntimeError(f"Failed to load FHIR resources: {str(e)}")
     
